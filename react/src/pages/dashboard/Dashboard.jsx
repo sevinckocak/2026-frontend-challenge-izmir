@@ -5,6 +5,8 @@ import InvestigationMap from '../../components/map/InvestigationMap';
 import CaseTimeline from '../../components/timeline/CaseTimeline';
 import RightPanels from '../../components/forensics/RightPanels';
 import Taskbar from '../../components/taskbar/Taskbar';
+import EventModal from '../../components/timeline/EventModal';
+import SuspectDrawer from '../../components/drawer/SuspectDrawer';
 
 export default function Dashboard() {
   return (
@@ -13,20 +15,21 @@ export default function Dashboard() {
         <CaseHeader />
 
         <div className="flex flex-1 overflow-hidden min-h-0">
-          {/* Left: Suspects */}
           <SuspectPanel />
 
-          {/* Center: Map + Timeline */}
-          <div className="flex flex-col flex-1 overflow-hidden min-w-0">
+          <div className="flex flex-col flex-1 overflow-hidden min-w-0" style={{ isolation: 'isolate' }}>
             <InvestigationMap />
             <CaseTimeline />
           </div>
 
-          {/* Right: Forensics / Evidence / Network */}
           <RightPanels />
         </div>
 
         <Taskbar />
+
+        {/* Global overlays — mounted inside Provider so they can read context */}
+        <EventModal />
+        <SuspectDrawer />
       </div>
     </InvestigationProvider>
   );

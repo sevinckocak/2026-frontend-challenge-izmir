@@ -8,11 +8,13 @@ Please fill in your information after forking this repository:
 
 ## Project Description
 
-[Add a brief description of your project here]
+Bu proje, kayıp bir kişi olan "Qodo"nun izini sürmek için tasarlanmış, interaktif ve modern bir dijital adli tıp / dedektif paneli (dashboard) uygulamasıdır. Jotform API üzerinden çekilen 5 farklı parçalı veri kaynağı (Konum, Mesaj, Görüntüleme, Not ve İpucu) tek bir akıllı zaman çizelgesinde (timeline) ve harita üzerinde birleştirilmiştir. Amaç, dağınık verileri anlamlı bir istihbarat arayüzüne dönüştürmektir.
 
 ## Getting Started
 
-[Add instructions for setting up and running the project]
+bağımlılıkları yükleme: npm install
+Kök dizinde .env adında bir dosya oluşturun ve .env.example içindeki şablonu kopyalayarak Jotform API anahtarınızı ekleyin.
+VITE_JOTFORM_API_KEY=api anahtar
 
 # 🚀 Challenge Duyurusu
 

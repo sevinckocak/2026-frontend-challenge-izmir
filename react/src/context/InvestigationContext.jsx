@@ -17,11 +17,15 @@ const INITIAL_FILTERS = {
 };
 
 export function InvestigationProvider({ children }) {
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [events, setEvents]               = useState([]);
+  const [loading, setLoading]             = useState(true);
+  const [error, setError]                 = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [filters, setFilters] = useState(INITIAL_FILTERS);
+  const [filters, setFilters]             = useState(INITIAL_FILTERS);
+
+  // ── Drawer state ─────────────────────────────────────────────────────────────
+  const [drawerOpen, setDrawerOpen]         = useState(false);
+  const [selectedSuspect, setSelectedSuspect] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -30,17 +34,13 @@ export function InvestigationProvider({ children }) {
         setEvents(data);
         setError(null);
       })
-      .catch(err => {
-        setError(err.message || 'Failed to load investigation data.');
-      })
+      .catch(err => setError(err.message || 'Failed to load investigation data.'))
       .finally(() => setLoading(false));
   }, []);
 
   const uniquePeople = useMemo(() => {
     const people = [
-      ...new Set(
-        events.map(e => e.person).filter(p => p && p !== 'Unknown')
-      ),
+      ...new Set(events.map(e => e.person).filter(p => p && p !== 'Unknown')),
     ];
     return people.sort();
   }, [events]);
@@ -74,8 +74,15 @@ export function InvestigationProvider({ children }) {
     });
   }, []);
 
-  const resetFilters = useCallback(() => {
-    setFilters(INITIAL_FILTERS);
+  const resetFilters = useCallback(() => setFilters(INITIAL_FILTERS), []);
+
+  const openDrawer = useCallback((suspect) => {
+    setSelectedSuspect(suspect);
+    setDrawerOpen(true);
+  }, []);
+
+  const closeDrawer = useCallback(() => {
+    setDrawerOpen(false);
   }, []);
 
   return (
@@ -92,6 +99,10 @@ export function InvestigationProvider({ children }) {
         resetFilters,
         filteredEvents,
         uniquePeople,
+        drawerOpen,
+        selectedSuspect,
+        openDrawer,
+        closeDrawer,
       }}
     >
       {children}

@@ -43,11 +43,13 @@ function useTopSuspects(limit = 6) {
 }
 
 function SuspectCard({ suspect, index }) {
+  const { openDrawer } = useInvestigation();
   const s = getStatusConfig(suspect.confidence);
   const initial = suspect.name.charAt(0).toUpperCase();
 
   return (
     <div
+      onClick={() => openDrawer(suspect)}
       className={`border-b border-cyan-500/8 p-3 hover:bg-cyan-500/4 cursor-pointer transition-colors border-l-2 ${s.border}`}
       style={{ animationDelay: `${index * 70}ms` }}
     >
