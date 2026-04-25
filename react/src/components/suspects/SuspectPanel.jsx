@@ -14,28 +14,33 @@ function useTopSuspects(limit = 6) {
   const { events } = useInvestigation();
 
   return useMemo(() => {
-    const confMap = {};
-    const countMap = {};
+    const confMap = {};    // key: lowercase name
+    const countMap = {};   // key: lowercase name
+    const displayMap = {}; // key: lowercase name → display name
 
     events.filter(e => e.type === 'tip').forEach(e => {
       const m = e.content?.match(/confidence:\s*(\w+)/i);
       const level = m?.[1]?.toLowerCase() || 'low';
-      const p = e.person;
-      if (!confMap[p] || CONF_LEVELS[level] > CONF_LEVELS[confMap[p]]) confMap[p] = level;
+      const name = e.person?.trim();
+      if (!name) return;
+      const key = name.toLowerCase();
+      if (!confMap[key] || CONF_LEVELS[level] > CONF_LEVELS[confMap[key]]) confMap[key] = level;
     });
 
     events.forEach(e => {
       const name = e.person?.trim();
       if (!name || name === 'Unknown' || PODO.has(name.toLowerCase())) return;
-      countMap[name] = (countMap[name] || 0) + 1;
+      const key = name.toLowerCase();
+      countMap[key] = (countMap[key] || 0) + 1;
+      if (!displayMap[key]) displayMap[key] = name;
     });
 
     return Object.keys(countMap)
-      .map(name => ({
-        name,
-        confidence: confMap[name] || 'low',
-        level: CONF_LEVELS[confMap[name] || 'low'],
-        count: countMap[name],
+      .map(key => ({
+        name: displayMap[key],
+        confidence: confMap[key] || 'low',
+        level: CONF_LEVELS[confMap[key] || 'low'],
+        count: countMap[key],
       }))
       .sort((a, b) => b.level - a.level || b.count - a.count)
       .slice(0, limit);

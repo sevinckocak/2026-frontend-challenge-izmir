@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
+import GuessModal from '../guess/GuessModal';
 
 const FILTER_TYPES = [
   { id: 'checkin',  label: 'Konum Bilgisi',       dot: 'bg-blue-400',    active: 'bg-blue-500/20 text-blue-300 border-blue-500/50',   inactive: 'text-gray-600 border-gray-700/40 hover:text-blue-400 hover:border-blue-500/30' },
@@ -67,6 +68,8 @@ export default React.memo(function CaseHeader() {
           <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
           <span className="text-[11px] font-bold text-red-400 uppercase tracking-[0.2em]">AKTİF DURUM</span>
         </div>
+        <div className="w-px h-5 bg-gray-800 flex-shrink-0" />
+        <GuessModal />
       </div>
     </header>
   );
