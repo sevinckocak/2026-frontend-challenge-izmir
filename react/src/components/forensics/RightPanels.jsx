@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import VideoPlayer from './VideoPlayer';
 import qodoFoto from '../../assets/qodo_foto.png';
 import qodoKanit from '../../assets/qodo_kanıt.png';
@@ -70,15 +70,84 @@ const PHOTOS = [
   { src: qodoKanit, label: 'Evde Bulunan Eşya', sub: 'Fiziksel Kanıt' },
 ];
 
-function PhotoCard({ src, label, sub }) {
+function PhotoCard({ src, label, sub, onClick }) {
   return (
-    <div className="flex-1 relative rounded overflow-hidden border border-cyan-500/10 hover:border-amber-500/40 transition-colors group cursor-pointer min-w-0">
-      <img src={src} alt={label} className="w-full h-full object-cover" />
+    <div
+      onClick={onClick}
+      className="flex-1 relative rounded overflow-hidden border border-cyan-500/10 hover:border-amber-500/40 transition-colors group cursor-pointer min-w-0"
+    >
+      <img src={src} alt={label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent px-2 py-1.5">
         <p className="text-[9px] text-white font-semibold leading-tight truncate">{label}</p>
         <p className="text-[8px] text-gray-500 leading-tight">{sub}</p>
       </div>
+      {/* Zoom icon on hover */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+        <div className="w-8 h-8 rounded-full bg-black/60 border border-white/20 flex items-center justify-center backdrop-blur-sm">
+          <svg viewBox="0 0 16 16" className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="6.5" cy="6.5" r="4" />
+            <path d="M10 10l3.5 3.5M5 6.5h3M6.5 5v3" strokeLinecap="round" />
+          </svg>
+        </div>
+      </div>
       <div className="absolute inset-0 ring-1 ring-amber-500/0 group-hover:ring-amber-500/35 rounded transition-all pointer-events-none" />
+    </div>
+  );
+}
+
+function PhotoLightbox({ photo, onClose }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
+
+  if (!photo) return null;
+
+  return (
+    <div
+      className="fixed inset-0 flex items-center justify-center p-6"
+      style={{ zIndex: 1100, backgroundColor: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(6px)' }}
+      onClick={onClose}
+    >
+      {/* Corner brackets decoration */}
+      <div className="absolute top-8 left-8 w-8 h-8 border-t-2 border-l-2 border-cyan-500/40 pointer-events-none" />
+      <div className="absolute top-8 right-8 w-8 h-8 border-t-2 border-r-2 border-cyan-500/40 pointer-events-none" />
+      <div className="absolute bottom-8 left-8 w-8 h-8 border-b-2 border-l-2 border-cyan-500/40 pointer-events-none" />
+      <div className="absolute bottom-8 right-8 w-8 h-8 border-b-2 border-r-2 border-cyan-500/40 pointer-events-none" />
+
+      <div
+        className="relative max-w-2xl w-full flex flex-col items-center gap-3"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Label bar */}
+        <div className="flex items-center gap-3 self-stretch px-1">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-400/80">
+              {photo.label}
+            </p>
+          </div>
+          <span className="text-[10px] text-gray-600">{photo.sub}</span>
+          <button
+            onClick={onClose}
+            className="ml-auto w-7 h-7 rounded-full bg-gray-800/80 hover:bg-gray-700 flex items-center justify-center transition-colors text-gray-500 hover:text-white border border-gray-700/50"
+          >
+            <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 3l10 10M13 3L3 13" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Image */}
+        <img
+          src={photo.src}
+          alt={photo.label}
+          className="w-full rounded-lg border border-cyan-500/15 shadow-2xl shadow-black/60 object-contain max-h-[70vh]"
+        />
+
+        <p className="text-[10px] text-gray-700">Kapatmak için ESC veya dışarıya tıklayın</p>
+      </div>
     </div>
   );
 }
@@ -101,32 +170,40 @@ function Section({ title, children, className = '', action }) {
 
 // ── Root ─────────────────────────────────────────────────────────────────────
 export default function RightPanels() {
+  const [lightbox, setLightbox] = useState(null);
+
   return (
-    <div className="w-72 flex-shrink-0 flex flex-col bg-[#06101e] border-l border-cyan-500/10 overflow-hidden">
+    <>
+      <div className="w-72 flex-shrink-0 flex flex-col bg-[#06101e] border-l border-cyan-500/10 overflow-hidden">
 
-      {/* 1. Visual Evidence — takes the top 2/3 */}
-      <Section title="Görsel ve İşitsel Kanıtlar" className="flex-[2] min-h-0">
-        <div className="flex flex-col gap-2 h-full">
-          {/* Video — fills available height */}
-          <div className="flex-1 min-h-0 rounded overflow-hidden border border-cyan-500/10">
-            <VideoPlayer />
+        {/* 1. Visual Evidence — takes the top 2/3 */}
+        <Section title="Görsel ve İşitsel Kanıtlar" className="flex-[2] min-h-0">
+          <div className="flex flex-col gap-2 h-full">
+            {/* Video — fills available height */}
+            <div className="flex-1 min-h-0 rounded overflow-hidden border border-cyan-500/10">
+              <VideoPlayer />
+            </div>
+            {/* Photos side by side */}
+            <div className="flex gap-2 h-28 flex-shrink-0">
+              {PHOTOS.map(p => (
+                <PhotoCard key={p.label} {...p} onClick={() => setLightbox(p)} />
+              ))}
+            </div>
           </div>
-          {/* Photos side by side */}
-          <div className="flex gap-2 h-28 flex-shrink-0">
-            {PHOTOS.map(p => <PhotoCard key={p.label} {...p} />)}
-          </div>
-        </div>
-      </Section>
+        </Section>
 
-      {/* 2. Connection Analysis — bottom 1/3 */}
-      <Section
-        title="Bağlantı Analizi"
-        className="flex-1 min-h-0"
-        action={<span className="text-[9px] text-gray-700">8 düğüm · 8 bağlantı</span>}
-      >
-        <NetworkGraph />
-      </Section>
+        {/* 2. Connection Analysis — bottom 1/3 */}
+        <Section
+          title="Bağlantı Analizi"
+          className="flex-1 min-h-0"
+          action={<span className="text-[9px] text-gray-700">8 düğüm · 8 bağlantı</span>}
+        >
+          <NetworkGraph />
+        </Section>
 
-    </div>
+      </div>
+
+      <PhotoLightbox photo={lightbox} onClose={() => setLightbox(null)} />
+    </>
   );
 }
