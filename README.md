@@ -15,6 +15,7 @@ Bu proje, kayıp bir kişi olan "Qodo"nun izini sürmek için tasarlanmış, int
 bağımlılıkları yükleme: npm install
 Kök dizinde .env adında bir dosya oluşturun ve .env.example içindeki şablonu kopyalayarak Jotform API anahtarınızı ekleyin.
 VITE_JOTFORM_API_KEY=api anahtar
+npm run dev ile çalıştırma (react ve normal klasör için ayrı install gerekebilir run ederken react klasörünün içinde olun)
 
 # 🚀 Challenge Duyurusu
 

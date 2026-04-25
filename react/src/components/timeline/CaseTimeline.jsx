@@ -70,14 +70,24 @@ export default function CaseTimeline() {
                         ${isSelected ? 'ring-1 ring-amber-400/60 shadow-md shadow-amber-400/10' : ''}
                       `}
                     >
-                      <div className={`text-[10px] font-bold ${cfg.color} mb-0.5 truncate`}>
-                        {cfg.icon} {cfg.label}
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className={`text-[10px] font-bold ${cfg.color} truncate`}>
+                          {cfg.icon} {cfg.label}
+                        </span>
+                        {event.location && (
+                          <span
+                            className={`text-[9px] flex-shrink-0 ml-1 transition-colors ${isSelected ? 'text-amber-400' : 'text-gray-700'}`}
+                            title="Haritada göster"
+                          >
+                            🗺
+                          </span>
+                        )}
                       </div>
                       <div className="text-white text-[11px] font-medium truncate leading-tight">
                         {event.person}
                       </div>
                       {event.location && (
-                        <div className="text-gray-600 text-[10px] truncate mt-0.5">
+                        <div className={`text-[10px] truncate mt-0.5 transition-colors ${isSelected ? 'text-amber-300' : 'text-gray-600'}`}>
                           📍 {event.location}
                         </div>
                       )}
