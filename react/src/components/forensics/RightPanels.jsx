@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useInvestigation } from '../../context/InvestigationContext';
+import VideoPlayer from './VideoPlayer';
 
 // ── Seeded chart data (consistent across renders) ──────────────────────────
 function seeded(seed) {
@@ -130,40 +131,29 @@ function NetworkGraph() {
 }
 
 // ── Evidence Panel ──────────────────────────────────────────────────────────
-function EvidencePanel() {
-  const { events } = useInvestigation();
-  const sightings = useMemo(() => events.filter(e => e.type === 'sighting').slice(0, 3), [events]);
+const PHOTO_ITEMS = [
+  { icon: '🐱', label: 'Qodo Fotoğrafı' },
+  { icon: '🎒', label: 'Son Kişisel Eşya' },
+  { icon: '📷', label: 'Gözetim Görüntüsü' },
+];
 
+function EvidencePanel() {
   return (
     <div className="flex gap-2 h-full">
-      {/* Video placeholder */}
-      <div className="flex-1 bg-[#040a16] border border-cyan-500/10 rounded overflow-hidden relative">
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-          <div className="w-8 h-8 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center">
-            <div className="w-0 h-0 border-t-4 border-b-4 border-l-6 border-transparent border-l-red-400 ml-0.5" />
-          </div>
-          <p className="text-[9px] text-gray-600 text-center">Kaçırılma Anı<br />Canlandırması</p>
-        </div>
-        {/* Scanline effect */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
-        }} />
-        <div className="absolute bottom-1 left-1 right-1">
-          <div className="h-0.5 bg-gray-800 rounded">
-            <div className="h-full w-1/3 bg-red-500/60 rounded" />
-          </div>
-        </div>
+      {/* Real video player */}
+      <div className="flex-1 min-w-0 rounded overflow-hidden border border-cyan-500/10">
+        <VideoPlayer />
       </div>
+
       {/* Photo grid */}
-      <div className="flex flex-col gap-1.5 w-24">
-        {sightings.map((e, i) => (
-          <div key={e.id} className="flex-1 bg-[#040a16] border border-cyan-500/10 rounded flex flex-col items-center justify-center p-1">
-            <div className="text-lg leading-none mb-0.5">
-              {i === 0 ? '🐱' : i === 1 ? '🎒' : '📷'}
-            </div>
-            <p className="text-[8px] text-gray-700 text-center leading-tight truncate w-full">
-              {i === 0 ? 'Qodo Fotoğrafı' : i === 1 ? 'Son Eşya' : 'Gözetim'}
-            </p>
+      <div className="flex flex-col gap-1.5 w-20 flex-shrink-0">
+        {PHOTO_ITEMS.map(({ icon, label }) => (
+          <div
+            key={label}
+            className="flex-1 bg-[#040a16] border border-cyan-500/10 hover:border-cyan-500/30 rounded flex flex-col items-center justify-center p-1 cursor-pointer transition-colors"
+          >
+            <span className="text-lg leading-none mb-0.5">{icon}</span>
+            <p className="text-[8px] text-gray-600 text-center leading-tight">{label}</p>
           </div>
         ))}
       </div>
@@ -210,7 +200,7 @@ export default function RightPanels() {
       </Section>
 
       {/* 2. Visual Evidence */}
-      <Section title="Görsel ve İşitsel Kanıtlar" className="h-[152px]">
+      <Section title="Görsel ve İşitsel Kanıtlar" className="h-[210px]">
         <EvidencePanel />
       </Section>
 
